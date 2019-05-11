@@ -8,42 +8,21 @@
 #include <string>
 #include <mutex>
 
-#include <deque>
-
 #include "nlohmann/json.hpp"
-using json = nlohmann::json;
 
-Reader::Reader(std::deque<nlohmann::json> &toDeliver, std::mutex &mut)
-{
-
+Reader::Reader(std::queue<nlohmann::json> &toDeliver, std::mutex &mut) {
     toDeliverQueue = &toDeliver;
     queueMutex = &mut;
 }
 
 
-void Reader::read()
-{
+void Reader::read() {
     std::string line;
-    while (std::getline(std::cin, line))
-    {
-        json json_ = json::parse(line);
-
+    while (true) {
+        std::getline(std::cin, line);
+        nlohmann::json json_ = nlohmann::json::parse(line);
         queueMutex->lock();
-        toDeliverQueue->push_back(json_);
+        toDeliverQueue->push(json_);
         queueMutex->unlock();
     }
-
-}
-
-json Reader::popJson(std::string type, int id) {
-    queueMutex->lock();
-    for (std::deque<json>::iterator i = toDeliverQueue->begin(); i != toDeliverQueue->end(); i++) {
-        if ((*i)["data"]["eventType"] == type && (*i)["userId"] == id) {
-            json json_ = *i;
-            toDeliverQueue->erase(i);
-            queueMutex->unlock();
-            return json_;
-        }
-    }
-    queueMutex->unlock();
 }
