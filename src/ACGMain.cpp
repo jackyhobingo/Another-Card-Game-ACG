@@ -17,21 +17,31 @@
 
 ACGMain::ACGMain() {
     router = new Router();
-    reader = router->buildReader();
+    //reader = router->buildReader();
     printer = router->buildPrinter();
-    accountSystem = new AccountSystem();
+
+    accountSystemController = new AccountSystemController();
+    router->setAccountSystemController(accountSystemController);
+
+//    ladderSystem = new LadderSystem();
 }
 
 void ACGMain::print() {
     printer->print();
 }
 void ACGMain::read() {
-    reader->read();
+    //reader->read();
 }
 
+void ACGMain::route() {
+    router->route();
+}
 void ACGMain::run() {
-    std::thread read_thread(&ACGMain::read, this);
+    //std::thread read_thread(&ACGMain::read, this);
     std::thread print_thread(&ACGMain::print, this);
-    read_thread.join();
+    std::thread route_thread(&ACGMain::route, this);
+    //read_thread.join();
     print_thread.join();
+    route_thread.join();
+
 }

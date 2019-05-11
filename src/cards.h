@@ -24,7 +24,7 @@ public:
 	int getId();
     std::string getName();
     std::string getAttributes();
-	
+	Card *copy();
 	
 	
 
